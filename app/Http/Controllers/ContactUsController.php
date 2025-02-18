@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use App\Models\ContactUs;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ContactMail;
@@ -10,9 +11,28 @@ use App\Mail\ContactMail;
 class ContactUsController extends Controller
 {
     public function sendContact(Request $request){
+        $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email',
+            'g-recaptcha-response' => 'required',
+        ]);
+    
+        // Verify reCAPTCHA response
+        $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+            'secret' => config('services.recaptcha.secret'),
+            'response' => $request->input('g-recaptcha-response'),
+        ]);
+    
+        $body = $response->json();
+        
+        if (!$body['success']) {
+            return back()->withErrors(['captcha' => 'reCAPTCHA validation failed. Please try again.']);
+        }
+        
         $cu = new ContactUs();
         $cu->name = $request->name;
         $cu->email = $request->email;
+        $cu->page = $request->page;
         $cu->save();
 
         $validated = $request->validate([
@@ -24,7 +44,7 @@ class ContactUsController extends Controller
         Mail::to(['nico@negotium-solutions.com','jaco@negotium-solutions.com'])->send(new ContactMail($validated));
 
         
-        $request->session()->flash('flash_success',  "Thank you for reaching out. One of our representatives will contact you shortly.");
+        $request->session()->flash('flash_success',  "Thank you for reaching out. One of our representatives will contact you within 20 minutes.");
         return redirect()->back();
     }
 

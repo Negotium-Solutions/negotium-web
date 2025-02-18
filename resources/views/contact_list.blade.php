@@ -13,12 +13,14 @@
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
+                            <th>Interest</th>
                             <th style="width:1px;">Date Submitted</th>
                         </tr>
                     @forelse($cus as $cu)
                         <tr>
                             <td>{{ $cu->name }}</td>
                             <td><a href="mailto:{{ $cu->email }}">{{ $cu->email }}</a></td>
+                            <td nowrap>{{ $cu->page }}</td>
                             <td nowrap>{{ $cu->created_at }}</td>
                         </tr>
                     @empty

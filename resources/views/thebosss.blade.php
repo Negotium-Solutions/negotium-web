@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>Negotium.app - The BOSSS</title>
+        <script async src="https://www.google.com/recaptcha/api.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Young+Serif&display=swap" rel="stylesheet">
   <style>
@@ -52,8 +53,8 @@
   main {
     flex: 1;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    /* justify-content: center;
+    align-items: center; */
     width: 100%;
     background-color: #333;
   }
@@ -75,7 +76,6 @@
     flex: 1 1 300px;
 	color:#FFF;
     text-align: center;
-    height: 200px; /* Ensures all cards are the same height */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -105,10 +105,16 @@
             @endif
             <header>
                 <h1>Negotium</h1>
+                
             </header>
 
             <main>
                 <div class="container col-lg-4 col-md-4 col-sm-12 col-xs-12">
+              <div class="text-white pb-3 mb-3 text-center">
+                <h3>Negotium.app<br />- The BOSSS -</h3>
+                <small>Business Operating Self-Service System</small>
+              </div>
+              <div class="text-white pb-3 mb-3 text-center"></div>
                   @if(Session::has('flash_success'))
                     <div class="alert alert-success" role="alert">
                           {{Session::get('flash_success')}}
@@ -118,23 +124,25 @@
                     </div>
                         {{Session::forget('flash_success')}}
                         @else
-                    <p style="color:#FFF;margin:0px auto 20px;">Thank you for your interest in Negotium.<br />
-                    Please leave your details below and we will get back to you within the hour.</p>
+                    <p style="color:#FFF;margin:0px auto 20px;" class="pt-3">Thank you for your interest in Negotium.<br />
+                    Please leave your details below and we will get back to you within 20 minutes.</p>
                     <div class="column col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <form method="post" action="{{ route('sendContact') }}" class="row g-2 align-items-center">
                     @csrf
                       <div class="form-group">
                       <div class="col-auto">
                           <label for="name" class="visually-hidden">Name</label>
-                          <input type="text" class="form-control" name="name" id="name" placeholder="Enter your name" required>
+                          <input type="text" class="form-control" name="name" value="{{ old('name') }}" id="name" placeholder="Enter your name" required>
                       </div>
                       </div>
                       <div class="form-group">
                       <div class="col-auto">
                           <label for="email" class="visually-hidden">Email</label>
-                          <input type="email" class="form-control" name="email" id="email" placeholder="Enter your email" required>
+                          <input type="email" class="form-control" name="email" value="{{ old('email') }}" id="email" placeholder="Enter your email" required>
+                          <input type="hidden" name="page" value="Negotium.app - The BOSSS" />
                       </div>
                       </div>
+                      <div class="g-recaptcha mt-4" data-sitekey={{config('services.recaptcha.key')}}></div>
                       <div class="w-100 text-right">
                           <button type="submit" class="float-right btn btn-primary">Submit</button>
                       </div>
