@@ -40,6 +40,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/contact-list', [ContactUsController::class, 'contactList'])->middleware(['auth'])->name('contactList');
+Route::post('/contact-list/toggle-contacted/{id}', [ContactUsController::class, 'toggleContacted'])->name('contactList.toggleContacted');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

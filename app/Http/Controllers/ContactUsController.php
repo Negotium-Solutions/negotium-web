@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Http;
 use App\Models\ContactUs;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ContactMail;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ContactListExport;
 
 class ContactUsController extends Controller
 {
@@ -48,9 +50,24 @@ class ContactUsController extends Controller
         return redirect()->back();
     }
 
-    public function contactList(){
+    public function contactList(Request $request){
         $cus = ContactUs::orderBy('id','desc')->get();
 
+        if($request->has('export') && $request->export == 1){
+            return Excel::download(new ContactListExport('exports.contact_list',['cus' => $cus]),'ContactList_'.date('YmdHi').'.xlsx', null, [
+                'disk' => 'public' // specify the disk (storage/app/public)
+            ]);
+        }
+
         return view('contact_list')->with(['cus' => $cus]);
+    }
+
+    public function toggleContacted($id)
+    {
+        $cu = ContactUs::findOrFail($id);
+        $cu->contacted = !$cu->contacted; // Toggle the status
+        $cu->save();
+
+        return response()->json(['success' => true, 'contacted' => $cu->contacted]);
     }
 }
